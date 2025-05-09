@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Traffic Sign Classifier</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            padding-top: 30px;
+            background-color: #f7f9fc;
+            color: #333;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .upload-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+        .upload-area:hover {
+            border-color: #4CAF50;
+        }
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        .file-input-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .file-btn:hover {
+            background-color: #2980b9;
+        }
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+        .result-container {
+            margin-top: 40px;
+            text-align: center;
+        }
+        .result-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+            padding: 30px;
+            max-width: 650px;
+            margin: 0 auto;
+        }
+        .result-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    padding: 30px;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.image-preview {
+    width: 400px;
+    height: 400px;
+    max-height: none;
+    margin: 15px 0;
+    border-radius: 10px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    object-fit: contain;
+}
+
+        .filename {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        .hidden {
+            display: none;
+        }
+        #file-name-display {
+            margin-top: 12px;
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Traffic Sign Classifier </h1>
+        
+        <div class="card">
+            <form action="/predict" method="post" enctype="multipart/form-data" id="upload-form">
+                <div class="upload-area">
+                    <div class="file-input-wrapper">
+                        <button class="file-btn">Choose Image</button>
+                        <input type="file" name="file" id="file-input" accept="image/*" required>
+                    </div>
+                    <div id="file-name-display">No file selected</div>
+                    <div id="image-preview-container" class="hidden">
+                        <img id="image-preview" class="image-preview" src="#" alt="Preview">
+                    </div>
+                </div>
+                <button type="submit" class="submit-btn">Classify Image</button>
+            </form>
+        </div>
+
+        {% if result %}
+        <div class="result-container">
+            <div class="result-card">
+                <div class="filename">{{ filename }}</div>
+                <img src="{{ image_path }}" alt="Traffic Sign" class="image-preview">
+                <div class="result-text">{{ result }}</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Display file name and preview image when selected
+        document.getElementById('file-input').addEventListener('change', function() {
+            const fileNameDisplay = document.getElementById('file-name-display');
+            const imagePreviewContainer = document.getElementById('image-preview-container');
+            const imagePreview = document.getElementById('image-preview');
+            
+            if (this.files && this.files[0]) {
+                // Show file name
+                fileNameDisplay.textContent = this.files[0].name;
+                
+                // Show image preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    imagePreviewContainer.classList.remove('hidden');
+                }
+                reader.readAsDataURL(this.files[0]);
+            } else {
+                fileNameDisplay.textContent = 'No file selected';
+                imagePreviewContainer.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>
